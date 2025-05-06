@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import TheWelcome from '../components/TheWelcome.vue'
 </script>
 
 <template>
   <main>
-    <v-card text="Hello world"></v-card>
+    <TheWelcome />
   </main>
 </template>
