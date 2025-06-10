@@ -1,6 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import LnHomeView from '@/views/LnHomeView.vue'
+import LightnovelsGetView from '@/views/LightnovelsGetView.vue'
+import LightnovelGetView from '@/views/LightnovelGetView.vue'
+import LightnovelUpdateView from '@/views/LightnovelUpdateView.vue'
+
 
 
 const router = createRouter({
@@ -15,6 +19,21 @@ const router = createRouter({
       path: '/ln1',
       name: 'ln2',
       component: LnHomeView,
+    },
+    {
+      path: '/ln5',
+      name: 'lnsGet',
+      component: LightnovelsGetView,
+    },
+    {
+      path: '/ln6/:id',
+      name: 'lnGet',
+      component: LightnovelGetView,
+    },
+    {
+      path: '/ln7/:id',
+      name: 'lnUpdate',
+      component: LightnovelUpdateView,
     },
     {
       path: '/about',
