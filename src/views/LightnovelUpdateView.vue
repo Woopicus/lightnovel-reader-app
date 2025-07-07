@@ -40,6 +40,13 @@
               class="mt-4"
             ></v-text-field>
 
+            <v-text-field
+              v-model="genre"
+              label="Genre"
+              required
+              class="mt-4"
+            ></v-text-field>
+
             <v-btn
               color="primary"
               class="mt-6"
@@ -85,6 +92,7 @@ const lightnovelId = Number(route.params.id)
 const name = ref('')
 const price = ref(0)
 const description = ref('')
+const genre = ref('')
 
 getLightnovel()
 
@@ -95,6 +103,7 @@ function getLightnovel() {
       name.value = data.name
       price.value = data.price
       description.value = data.description
+      genre.value = data.genre
     })
     .catch(error => {
       console.error('GET error:', error)
@@ -105,7 +114,8 @@ function updateLightnovel() {
   axios.put(`http://127.0.0.1:8000/api/lightnovels/${lightnovelId}`, {
     name: name.value,
     price: price.value,
-    description: description.value
+    description: description.value,
+    genre: genre.value
   })
     .then(response => {
       console.log('Updated successfully:', response.data)

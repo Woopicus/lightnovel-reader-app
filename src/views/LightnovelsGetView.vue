@@ -154,9 +154,8 @@ const items = [
   { title: 'Magic' },
 ]
 
-
-
 getLightnovels()
+// getGenres()
 
 function getLightnovels() {
   axios
