@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import LnHomeView from '@/views/LnHomeView.vue'
-import LightnovelsGetView from '@/views/LightnovelsGetView.vue'
-import LightnovelGetView from '@/views/LightnovelGetView.vue'
-import LightnovelUpdateView from '@/views/LightnovelUpdateView.vue'
+import HomeView from '../../../../views/HomeView.vue'
+import LnHomeView from '@/app/modules/lightnovel/pages/LnHomeView.vue'
+import LightnovelsGetView from '@/app/modules/lightnovel/pages/LightnovelsGetView.vue'
+import LightnovelGetView from '@/app/modules/lightnovel/pages/LightnovelGETview.vue'
+import LightnovelUpdateView from '@/app/modules/lightnovel/pages/LightnovelUpdateView.vue'
 
 
 
@@ -41,7 +41,7 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      component: () => import('../../../../views/AboutView.vue'),
     },
   ],
 })
