@@ -61,7 +61,7 @@
           <v-divider class="my-4" />
 
           <v-btn
-            :to="{ name: 'ln2' }"
+            :to="{ name: 'lightnovel-create-page' }"
             color="secondary"
             variant="outlined"
             class="mt-2 mb-6"
@@ -118,7 +118,7 @@
 
                 <v-card-actions>
                   <v-btn
-                    :to="{ name: 'lnGet', params: { id: lightnovel.id } }"
+                    :to="{ name: 'lightnovel-details-page', params: { id: lightnovel.id } }"
                     color="primary"
                     variant="tonal"
                     block

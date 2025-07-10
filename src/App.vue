@@ -1,7 +1,7 @@
 <template>
   <!--  <div id="nav">-->
-  <!--    <router-link to="ln5">LnsGET</router-link>-->
-  <!--    <router-link to="ln6">lnGet</router-link>-->
+  <!--    <router-link to="ln5">lightnovel-overview-page</router-link>-->
+  <!--    <router-link to="ln6">lightnovel-details-page</router-link>-->
   <!--  </div>-->
   <RouterView />
 </template>

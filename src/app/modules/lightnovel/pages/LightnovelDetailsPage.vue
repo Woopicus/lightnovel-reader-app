@@ -69,7 +69,7 @@
             <v-btn
               color="primary"
               variant="outlined"
-              :to="{ name: 'lnUpdate', params: {id: lightnovelId} }"
+              :to="{ name: 'lightnovel-edit-page', params: {id: lightnovelId} }"
             >
               Update Lightnovel
             </v-btn>
