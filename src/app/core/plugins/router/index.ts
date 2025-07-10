@@ -1,11 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../../../../views/HomeView.vue'
-import LnHomeView from '@/app/modules/lightnovel/pages/LnHomeView.vue'
-import LightnovelsGetView from '@/app/modules/lightnovel/pages/LightnovelsGetView.vue'
-import LightnovelGetView from '@/app/modules/lightnovel/pages/LightnovelGETview.vue'
-import LightnovelUpdateView from '@/app/modules/lightnovel/pages/LightnovelUpdateView.vue'
-
-
+import { LightnovelRoutingModule } from '@/app/modules/lightnovel/Lightnovel routing module.ts'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,26 +10,7 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
-    {
-      path: '/ln1',
-      name: 'ln2',
-      component: LnHomeView,
-    },
-    {
-      path: '/ln5',
-      name: 'lnsGet',
-      component: LightnovelsGetView,
-    },
-    {
-      path: '/ln6/:id',
-      name: 'lnGet',
-      component: LightnovelGetView,
-    },
-    {
-      path: '/ln7/:id',
-      name: 'lnUpdate',
-      component: LightnovelUpdateView,
-    },
+    ...LightnovelRoutingModule,
     {
       path: '/about',
       name: 'about',
