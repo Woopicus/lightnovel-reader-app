@@ -42,7 +42,7 @@
               color="primary"
               class="mt-4"
               variant="outlined"
-              :to="{ name: 'lightnovel-edit-page', params: { id: 1 } }"
+              :to="{ name: 'lightnovel-edit-page', params: { id: 6 } }"
             >
               Update page
             </v-btn>
@@ -58,7 +58,7 @@ import axios from 'axios'
 import { ref } from 'vue'
 
 const rules = {
-  required: (msg = 'Only numbers are allowed') => {
+  required: (msg = 'This field needs to be filled in') => {
     return (value: string | number) => !!value || msg
   },
   minValue: (min: number) => {
@@ -77,7 +77,7 @@ const rules = {
 const name = ref('')
 const price = ref(0)
 const description = ref('')
-
+const formRef = ref()
 const loading = ref(false)
 
 async function submit() {
