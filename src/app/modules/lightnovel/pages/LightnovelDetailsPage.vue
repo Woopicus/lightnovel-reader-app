@@ -6,61 +6,38 @@
           <v-card-title class="text-h5">
             {{ lightnovel?.name }}
           </v-card-title>
-          <v-img
-              :width="300"
-              aspect-ratio="16/9"
-              cover
-              src="http://127.0.0.1:8000/api/lightnovels/10/images"
 
-          </v-img>
           <v-divider class="my-2" />
 
           <v-card-text>
             <div class="mb-4">
-              <strong>Description:</strong>
-              <p>{{ lightnovel?.description }}</p>
-            </div>
-
             <div>
               <strong>Price:</strong>
               <p>€{{ lightnovel?.price }}</p>
+            </div>
+
+              <strong>Description:</strong>
+              <p>{{ lightnovel?.description }}</p>
             </div>
           </v-card-text>
 
           <v-card-text>
             <v-file-input
-              v-model="file"
-              @change="request.image=file"
-              label="Upload File"
-              :multiple="false"
-              >
-            </v-file-input>
-
-              <v-btn
-                @click="uploadImage"
-                text="Upload"
-                :loading="loading"
-              >
-              </v-btn>
-
-<!--            <v-btn>-->
-<!--            <div>-->
-<!--              <label for="file-input" class="btn">Upload File</label>-->
-<!--              <input-->
-<!--                id="file-input"-->
-<!--                type="file"-->
-<!--                v-model="files"-->
-<!--                :multiple="multiple"-->
-<!--                @change="handleFileSelect"-->
-<!--                hidden-->
-<!--              />-->
-<!--              <ul>-->
-<!--                <li v-for="(file, index) in files" :key="file.name">-->
-<!--                  {{ file.name }} <button @click="uploadImage(index)">Upload</button>-->
-<!--                </li>-->
-<!--              </ul>-->
-<!--            </div>-->
-<!--            </v-btn>-->
+              v-model="uploadImages[lightnovelId]"
+              label="Upload Image"
+              accept="image/*"
+              density="compact"
+              hide-details
+              class="mb-2"
+            />
+            <v-btn
+              :loading="loading"
+              @click="uploadImage(lightnovelId)"
+              color="primary"
+              block
+            >
+              Upload Image
+            </v-btn>
           </v-card-text>
 
           <v-divider class="my-4" />
@@ -103,42 +80,44 @@ const file = ref<File>(null);
 // const form = new FormData();
 const request = {image:null}
 const loading = ref(false)
+const uploadImages = ref<Record<number, File | null>>({})
 
-getLightnovel()
+loadLightnovel()
 
-function getLightnovel() {
-  axios.get(`http://127.0.0.1:8000/api/lightnovels/${lightnovelId}`)
-    .then(response => {
-      lightnovel.value = response.data.data
-    })
-    .catch(error => {
-      console.error('API error:', error)
-    })
+async function loadLightnovel() {
+  try {
+    lightnovel.value = await getLightnovel(Number(lightnovelId))
+  } catch (error) {
+    console.error('API error:', error)
+  }
 }
 
 function deleteLightnovel() {
   axios.delete(`http://127.0.0.1:8000/api/lightnovels/${lightnovelId}`)
     .then(() => {
       console.log('Deleted')
-      router.push('/ln5')
+      router.push('/lightnovels')
     })
     .catch(error => {
       console.error('Delete error:', error)
     })
 }
 
-function uploadImage() {
+function uploadImage(lightnovelId: number) {
+  const imageFile = uploadImages.value[lightnovelId]
+  if (!imageFile) return
+
   loading.value = true
   const formData = serialize(request);
+  formData.append('image', imageFile)
 
   axios.post(`http://127.0.0.1:8000/api/lightnovels/${lightnovelId}/images`, formData, {
     headers:{
       'Content-Type': 'multipart/form-data'
     } })
-
     .then(() => {
-        loading.value = false
-      })
+      loading.value = false
+    })
     .catch(error => {
       console.error('POST error:', error)
     })

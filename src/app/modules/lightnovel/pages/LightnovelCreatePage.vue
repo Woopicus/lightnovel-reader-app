@@ -28,6 +28,13 @@
               class="mt-4"
             ></v-text-field>
 
+            <v-text-field
+              v-model="genre"
+              label="Genre"
+              :rules="[rules.required(), rules.lettersOnly()]"
+              class="mt-4"
+            ></v-text-field>
+
             <v-btn
               color="primary"
               class="mt-6"
@@ -54,29 +61,20 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios'
 import { ref } from 'vue'
+import { createLightnovel } from '@/app/modules/lightnovel/pages/Shared.ts'
+import rules from '@/app/modules/lightnovel/pages/Shared.ts'
 
-const rules = {
-  required: (msg = 'This field needs to be filled in') => {
-    return (value: string | number) => !!value || msg
-  },
-  minValue: (min: number) => {
-    return (value: number) => value >= min || `Must be at least ${min}`
-  },
-  lettersOnly: () => {
-    return (value: string) =>
-      /^[a-zA-Z\s]+$/.test(value) || 'Only letters and spaces allowed'
-  },
-  numberOnly: () => {
-    return (value: string | number) =>
-      /^\d+(\.\d+)?$/.test(String(value)) || 'Only numbers allowed'
-  }
-}
+const formValid = {
+  name: [rules.required(), rules.lettersOnly()],
+  price: [rules.required(), rules.minValue(0)],
+  description: [rules.numberOnly()]
+};
 
 const name = ref('')
 const price = ref(0)
 const description = ref('')
+const genre = ref('')
 const formRef = ref()
 const loading = ref(false)
 
@@ -86,18 +84,14 @@ async function submit() {
 
   loading.value = true
   try {
-    await axios.post('http://127.0.0.1:8000/api/lightnovels', {
-      name: name.value,
-      price: price.value,
-      description: description.value
-    })
+    await createLightnovel(name.value, price.value, description.value, genre.value)
 
     name.value = ''
     price.value = 0
     description.value = ''
-  } catch (error) {
-    console.error('POST error:', error)
-  } finally {
+    genre.value = ''
+  }
+  finally {
     loading.value = false
   }
 }

@@ -42,30 +42,15 @@
               class="mt-4"
             ></v-text-field>
 
-            <v-btn
-              color="primary"
-              class="mt-6"
-              @click="submit"
-              :disabled="!formValid"
-            >
+            <v-btn color="primary" class="mt-6" @click="submit" :disabled="!formValid">
               Update
             </v-btn>
 
-            <v-alert
-              v-if="successMessage"
-              type="success"
-              class="mt-4"
-              closable
-            >
+            <v-alert v-if="successMessage" type="success" class="mt-4" closable>
               {{ successMessage }}
             </v-alert>
 
-            <v-alert
-              v-if="errorMessage"
-              type="error"
-              class="mt-4"
-              closable
-            >
+            <v-alert v-if="errorMessage" type="error" class="mt-4" closable>
               {{ errorMessage }}
             </v-alert>
           </v-form>
@@ -76,9 +61,18 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { getLightnovel, editLightnovel } from '@/app/modules/lightnovel/pages/Shared.ts'
+import rules from '@/app/modules/lightnovel/pages/Shared.ts'
+
+
+const formValid = {
+  name: [rules.required(), rules.lettersOnly()],
+  price: [rules.required(), rules.minValue(0)],
+  description: [rules.numberOnly()],
+  genre: [rules.numberOnly()]
+};
 
 const name = ref('')
 const price = ref(0)
@@ -88,51 +82,36 @@ const formRef = ref()
 const route = useRoute()
 const lightnovelId = Number(route.params.id)
 
-const rules = {
-  required: (msg = 'This field needs to be filled in') => {
-    return (value: string | number) => !!value || msg
-  },
-  lettersOnly: () => {
-    return (value: string) =>
-      /^[a-zA-Z\s]+$/.test(value) || 'Only letters and spaces allowed'
-  },
-  numberOnly: () => {
-    return (value: string | number) =>
-      /^\d+(\.\d+)?$/.test(String(value)) || 'Only numbers allowed'
-  },
-  minValue: (min: number) => {
-    return (value: number) => value >= min || `Must be at least ${min}`
+LoadLightnovel()
+async function LoadLightnovel() {
+  loading.value = true
+  try {
+    const data = await getLightnovel(lightnovelId)
+    name.value = data.name
+    price.value = data.price
+    description.value = data.description
+    genre.value = data.genre
+  } catch (error) {
+    console.error('GET error:', error)
+  } finally {
+    loading.value = false
   }
-}
-
-function getLightnovel() {
-  axios.get(`http://127.0.0.1:8000/api/lightnovels/${lightnovelId}`)
-    .then(response => {
-      const data = response.data.data
-      name.value = data.name
-      price.value = data.price
-      description.value = data.description
-      genre.value = data.genre
-    })
-    .catch(error => {
-      console.error('GET error:', error)
-    })
 }
 
 async function submit() {
   const isValid = await formRef.value?.validate()
   if (!isValid) return
 
-  axios.put(`http://127.0.0.1:8000/api/lightnovels/${lightnovelId}`, {
-    name: name.value,
-    price: price.value,
-    description: description.value,
-    genre: genre.value
-  })
-    .then(() => {
-    })
-    .catch(error => {
-      console.error('Update failed:', error)
-    })
+  loading.value = true
+  try {
+    await editLightnovel(name.value, price.value, description.value, genre.value)
+
+    name.value = ''
+    price.value = 0
+    description.value = ''
+    genre.value = ''
+  } finally {
+    loading.value = false
+  }
 }
 </script>
