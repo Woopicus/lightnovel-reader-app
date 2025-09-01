@@ -63,8 +63,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getLightnovel, editLightnovel } from '@/app/modules/lightnovel/pages/Shared.ts'
-import rules from '@/app/modules/lightnovel/pages/Shared.ts'
+import { getLightnovel, editLightnovel } from '@/app/modules/lightnovel/shared/Shared'
 
 
 const formValid = {

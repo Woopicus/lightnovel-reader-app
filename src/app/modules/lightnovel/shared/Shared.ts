@@ -1,8 +1,22 @@
 import axios from 'axios'
 
+const API_URL = 'http://127.0.0.1:8000/api'
+
+export const api = axios.create({
+  baseURL: API_URL,
+})
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
 export async function getLightnovel(lightnovelId: number) {
   try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/lightnovels/${lightnovelId}`)
+    const response = await api.get(`/lightnovels/${lightnovelId}`)
     return response.data.data
   } catch (error) {
     console.error('GET error:', error)
@@ -12,33 +26,31 @@ export async function getLightnovel(lightnovelId: number) {
 
 export async function createLightnovel(name: string, price: number, description: string, genre: string){
   try {
-    return await axios.post('http://127.0.0.1:8000/api/lightnovels', {
-      name: name,
-      price: price,
-      description: description,
-      genre: genre
+    return await api.post('/lightnovels', {
+      name,
+      price,
+      description,
+      genre
     })
-  }
-  catch (error) {
+  } catch (error) {
     console.error('POST error:', error)
   }
 }
 
-export async function editLightnovel(name: string, price: number, description: string, genre: string) {
+export async function editLightnovel(lightnovelId: number, name: string, price: number, description: string, genre: string) {
   try {
-    return await axios.put(`http://127.0.0.1:8000/api/lightnovels/${lightnovelId}`, {
-      name: name,
-      price: price,
-      description: description,
-      genre: genre
+    return await api.put(`/lightnovels/${lightnovelId}`, {
+      name,
+      price,
+      description,
+      genre
     })
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Update failed:', error)
   }
 }
 
-const rules = {
+export const rules = {
   required: (msg = 'This field needs to be filled in') => {
     return (value: string | number) => !!value || msg;
   },
@@ -54,5 +66,3 @@ const rules = {
       /^\d+(\.\d+)?$/.test(String(value)) || 'Only numbers allowed';
   }
 };
-export default rules;
-

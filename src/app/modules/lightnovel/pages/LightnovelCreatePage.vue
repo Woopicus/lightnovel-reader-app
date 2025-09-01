@@ -62,14 +62,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { createLightnovel } from '@/app/modules/lightnovel/pages/Shared.ts'
-import rules from '@/app/modules/lightnovel/pages/Shared.ts'
+import { createLightnovel, rules } from '@/app/modules/lightnovel/shared/Shared'
 
 const formValid = {
   name: [rules.required(), rules.lettersOnly()],
   price: [rules.required(), rules.minValue(0)],
   description: [rules.numberOnly()]
-};
+}
 
 const name = ref('')
 const price = ref(0)

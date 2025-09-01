@@ -77,7 +77,6 @@ const router = useRouter()
 const lightnovelId = route.params.id as string
 const lightnovel = ref(null)
 const file = ref<File>(null);
-// const form = new FormData();
 const request = {image:null}
 const loading = ref(false)
 const uploadImages = ref<Record<number, File | null>>({})
