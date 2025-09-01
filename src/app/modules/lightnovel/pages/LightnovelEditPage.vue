@@ -63,23 +63,27 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getLightnovel, editLightnovel } from '@/app/modules/lightnovel/shared/Shared'
+import { getLightnovel, editLightnovel, rules } from '@/app/modules/lightnovel/shared/Shared'
 
-
-const formValid = {
-  name: [rules.required(), rules.lettersOnly()],
-  price: [rules.required(), rules.minValue(0)],
-  description: [rules.numberOnly()],
-  genre: [rules.numberOnly()]
-};
+const formRef = ref()
+const route = useRoute()
+const lightnovelId = Number(route.params.id)
+const loading = ref(false)
 
 const name = ref('')
 const price = ref(0)
 const description = ref('')
 const genre = ref('')
-const formRef = ref()
-const route = useRoute()
-const lightnovelId = Number(route.params.id)
+
+const successMessage = ref('')
+const errorMessage = ref('')
+
+const formValid = {
+  name: [rules.required(), rules.lettersOnly()],
+  price: [rules.required(), rules.minValue(0), rules.numberOnly()],
+  description: [rules.required(), rules.lettersOnly()],
+  genre: [rules.required(), rules.lettersOnly()]
+}
 
 LoadLightnovel()
 async function LoadLightnovel() {
@@ -92,6 +96,7 @@ async function LoadLightnovel() {
     genre.value = data.genre
   } catch (error) {
     console.error('GET error:', error)
+    errorMessage.value = 'Failed to load lightnovel.'
   } finally {
     loading.value = false
   }
@@ -103,12 +108,11 @@ async function submit() {
 
   loading.value = true
   try {
-    await editLightnovel(name.value, price.value, description.value, genre.value)
-
-    name.value = ''
-    price.value = 0
-    description.value = ''
-    genre.value = ''
+    await editLightnovel(lightnovelId, name.value, price.value, description.value, genre.value)
+    successMessage.value = 'Lightnovel updated successfully.'
+  } catch (error) {
+    console.error('Update error:', error)
+    errorMessage.value = 'Failed to update lightnovel.'
   } finally {
     loading.value = false
   }

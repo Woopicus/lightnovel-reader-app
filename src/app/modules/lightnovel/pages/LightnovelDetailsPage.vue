@@ -69,15 +69,14 @@
 import axios from 'axios'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { serialize } from 'object-to-formdata';
+import { serialize } from 'object-to-formdata'
+import { getLightnovel } from '@/app/modules/lightnovel/shared/Shared'
 
 const route = useRoute()
 const router = useRouter()
 
-const lightnovelId = route.params.id as string
-const lightnovel = ref(null)
-const file = ref<File>(null);
-const request = {image:null}
+const lightnovelId = Number(route.params.id)
+const lightnovel = ref<{ id: number, name: string, price: number, description: string } | null>(null)
 const loading = ref(false)
 const uploadImages = ref<Record<number, File | null>>({})
 
@@ -85,7 +84,7 @@ loadLightnovel()
 
 async function loadLightnovel() {
   try {
-    lightnovel.value = await getLightnovel(Number(lightnovelId))
+    lightnovel.value = await getLightnovel(lightnovelId)
   } catch (error) {
     console.error('API error:', error)
   }
@@ -102,25 +101,25 @@ function deleteLightnovel() {
     })
 }
 
-function uploadImage(lightnovelId: number) {
+async function uploadImage(lightnovelId: number) {
   const imageFile = uploadImages.value[lightnovelId]
   if (!imageFile) return
 
   loading.value = true
-  const formData = serialize(request);
+  const formData = new FormData()
   formData.append('image', imageFile)
 
-  axios.post(`http://127.0.0.1:8000/api/lightnovels/${lightnovelId}/images`, formData, {
-    headers:{
-      'Content-Type': 'multipart/form-data'
-    } })
-    .then(() => {
-      loading.value = false
+  try {
+    await axios.post(`http://127.0.0.1:8000/api/lightnovels/${lightnovelId}/images`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
     })
-    .catch(error => {
-      console.error('POST error:', error)
-    })
+  } catch (error) {
+    console.error('POST error:', error)
+  } finally {
+    loading.value = false
+  }
 }
-
 </script>
 

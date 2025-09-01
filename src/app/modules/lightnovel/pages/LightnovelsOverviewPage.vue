@@ -121,12 +121,6 @@
               </v-card>
             </v-col>
           </v-row>
-          <v-text-field
-            v-model="exampleName"
-            label="Example Name"
-            :rules="[rules.required(), rules.lettersOnly()]"
-            class="mt-4"
-          />
         </v-card>
       </v-col>
     </v-row>
