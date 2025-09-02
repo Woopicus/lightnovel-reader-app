@@ -130,7 +130,7 @@
 <script setup>
 import { ref, shallowRef } from 'vue'
 import axios from 'axios'
-import { api, rules } from '@/app/modules/lightnovel/shared/Shared'
+import { api } from '@/app/modules/lightnovel/shared/Shared'
 
 const lightnovels = ref([])
 const uploadImages = ref({})

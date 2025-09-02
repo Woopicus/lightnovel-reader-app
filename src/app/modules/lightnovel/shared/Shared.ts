@@ -1,4 +1,5 @@
 import axios from 'axios'
+import router from '@/app/core/plugins/router/index'
 
 const API_URL = 'http://127.0.0.1:8000/api'
 
@@ -13,6 +14,17 @@ api.interceptors.request.use((config) => {
   }
   return config
 })
+
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('token')
+      router.push({ name: 'login' })
+    }
+    return Promise.reject(error)
+  }
+)
 
 export async function getLightnovel(lightnovelId: number) {
   try {
