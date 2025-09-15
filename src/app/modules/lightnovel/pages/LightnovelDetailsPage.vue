@@ -3,6 +3,21 @@
     <v-row justify="center">
       <v-col cols="12" md="8">
         <v-card elevation="6" class="pa-6">
+          <v-img
+            v-if="lightnovelImage"
+            :src="lightnovelImage"
+            height="300"
+            class="mb-4 rounded-lg"
+            style="object-fit: cover;"
+          />
+          <v-img
+            v-else
+            src="/no-image.png"
+            height="300"
+            class="mb-4 rounded-lg"
+            style="object-fit: cover;"
+          />
+
           <v-card-title class="text-h5">
             {{ lightnovel?.name }}
           </v-card-title>
@@ -11,10 +26,10 @@
 
           <v-card-text>
             <div class="mb-4">
-            <div>
-              <strong>Price:</strong>
-              <p>€{{ lightnovel?.price }}</p>
-            </div>
+              <div>
+                <strong>Price:</strong>
+                <p>€{{ lightnovel?.price }}</p>
+              </div>
 
               <strong>Description:</strong>
               <p>{{ lightnovel?.description }}</p>
@@ -66,32 +81,33 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { serialize } from 'object-to-formdata'
-import { getLightnovel } from '@/app/modules/lightnovel/shared/Shared'
+import { getLightnovel, api } from '@/app/modules/lightnovel/shared/Shared'
 
 const route = useRoute()
 const router = useRouter()
 
 const lightnovelId = Number(route.params.id)
 const lightnovel = ref<{ id: number, name: string, price: number, description: string } | null>(null)
+const lightnovelImage = ref<string | null>(null)
 const loading = ref(false)
 const uploadImages = ref<Record<number, File | null>>({})
-
-loadLightnovel()
 
 async function loadLightnovel() {
   try {
     lightnovel.value = await getLightnovel(lightnovelId)
+    const response = await api.get(`/lightnovels/${lightnovelId}/images`, { responseType: 'blob' })
+    lightnovelImage.value = URL.createObjectURL(response.data)
   } catch (error) {
     console.error('API error:', error)
+    lightnovelImage.value = '/no-image.png'
   }
 }
 
+loadLightnovel()
 function deleteLightnovel() {
-  axios.delete(`http://127.0.0.1:8000/api/lightnovels/${lightnovelId}`)
+  api.delete(`/lightnovels/${lightnovelId}`)
     .then(() => {
       console.log('Deleted')
       router.push('/lightnovels')
@@ -110,11 +126,12 @@ async function uploadImage(lightnovelId: number) {
   formData.append('image', imageFile)
 
   try {
-    await axios.post(`http://127.0.0.1:8000/api/lightnovels/${lightnovelId}/images`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+    await api.post(`/lightnovels/${lightnovelId}/images`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
     })
+    const response = await api.get(`/lightnovels/${lightnovelId}/images`, { responseType: 'blob' })
+    lightnovelImage.value = URL.createObjectURL(response.data)
+
   } catch (error) {
     console.error('POST error:', error)
   } finally {
@@ -122,4 +139,3 @@ async function uploadImage(lightnovelId: number) {
   }
 }
 </script>
-
