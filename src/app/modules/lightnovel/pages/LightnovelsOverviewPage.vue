@@ -76,56 +76,39 @@
   </v-container>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
-import { api } from '@/app/modules/lightnovel/shared/Shared'
+import { getLightnovels, getLightnovelImage, uploadLightnovelImage } from '@/app/modules/lightnovel/shared/Shared'
 
-const lightnovels = ref([])
-const lightnovelsImages = ref({})
-const uploadImages = ref({})
+const lightnovels = ref<any[]>([])
+const lightnovelsImages = ref<Record<number, string>>({})
+const uploadImages = ref<Record<number, File>>({})
 const loading = ref(false)
 
-async function loadLightnovelImage(lightnovelId) {
+async function loadLightnovels() {
   try {
-    const response = await api.get(`/lightnovels/${lightnovelId}/images`, { responseType: 'blob' })
-    lightnovelsImages.value[lightnovelId] = URL.createObjectURL(response.data)
-  } catch (error) {
-    console.error('Image load failed for', lightnovelId, error)
-    lightnovelsImages.value[lightnovelId] = '/no-image.png'
-  }
-}
-
-async function getLightnovels() {
-  try {
-    const response = await api.get('/lightnovels')
-    lightnovels.value = response.data.data ?? response.data
+    lightnovels.value = await getLightnovels()
     for (const ln of lightnovels.value) {
-      await loadLightnovelImage(ln.id)
+      lightnovelsImages.value[ln.id] = await getLightnovelImage(ln.id)
     }
   } catch (error) {
     console.error('API error:', error)
   }
 }
 
-getLightnovels()
-
-async function uploadImage(lightnovelId) {
+async function uploadImage(lightnovelId: number) {
   const imageFile = uploadImages.value[lightnovelId]
   if (!imageFile) return
-
   loading.value = true
-  const formData = new FormData()
-  formData.append('image', imageFile)
-
   try {
-    await api.post(`/lightnovels/${lightnovelId}/images`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
-    await loadLightnovelImage(lightnovelId)
+    await uploadLightnovelImage(lightnovelId, imageFile)
+    lightnovelsImages.value[lightnovelId] = await getLightnovelImage(lightnovelId)
   } catch (error) {
     console.error('POST error:', error)
   } finally {
     loading.value = false
   }
 }
+
+loadLightnovels()
 </script>

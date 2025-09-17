@@ -26,40 +26,42 @@ api.interceptors.response.use(
   }
 )
 
-export async function getLightnovel(lightnovelId: number) {
-  try {
-    const response = await api.get(`/lightnovels/${lightnovelId}`)
-    return response.data.data
-  } catch (error) {
-    console.error('GET error:', error)
-    throw error
-  }
+export async function getLightnovels() {
+  const response = await api.get('/lightnovels')
+  return response.data.data ?? response.data
 }
 
-export async function createLightnovel(name: string, price: number, description: string, genre: string){
-  try {
-    return await api.post('/lightnovels', {
-      name,
-      price,
-      description,
-      genre
-    })
-  } catch (error) {
-    console.error('POST error:', error)
-  }
+export async function getLightnovel(lightnovelId: number) {
+  const response = await api.get(`/lightnovels/${lightnovelId}`)
+  return response.data.data
+}
+
+export async function createLightnovel(name: string, price: number, description: string, genre: string) {
+  return await api.post('/lightnovels', { name, price, description, genre })
 }
 
 export async function editLightnovel(lightnovelId: number, name: string, price: number, description: string, genre: string) {
+  return await api.put(`/lightnovels/${lightnovelId}`, { name, price, description, genre })
+}
+
+export async function getLightnovelImage(lightnovelId: number) {
   try {
-    return await api.put(`/lightnovels/${lightnovelId}`, {
-      name,
-      price,
-      description,
-      genre
+    const response = await api.get(`/lightnovels/${lightnovelId}/images`, {
+      responseType: 'blob'
     })
+    return URL.createObjectURL(response.data)
   } catch (error) {
-    console.error('Update failed:', error)
+    console.error('Image load failed for', lightnovelId, error)
+    return '/no-image.png'
   }
+}
+
+export async function uploadLightnovelImage(lightnovelId: number, imageFile: File) {
+  const formData = new FormData()
+  formData.append('image', imageFile)
+  return await api.post(`/lightnovels/${lightnovelId}/images`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
 }
 
 export const rules = {
