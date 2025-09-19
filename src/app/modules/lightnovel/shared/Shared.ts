@@ -37,11 +37,18 @@ export async function getLightnovel(lightnovelId: number) {
 }
 
 export async function createLightnovel(name: string, price: number, description: string, genre: string) {
-  return await api.post('/lightnovels', { name, price, description, genre })
+  const response = await api.post('/lightnovels', { name, price, description, genre })
+  return response.data
 }
 
 export async function editLightnovel(lightnovelId: number, name: string, price: number, description: string, genre: string) {
-  return await api.put(`/lightnovels/${lightnovelId}`, { name, price, description, genre })
+  const response = await api.put(`/lightnovels/${lightnovelId}`, { name, price, description, genre })
+  return response.data
+}
+
+export async function deleteLightnovel(lightnovelId: number) {
+  const response = await api.delete(`/lightnovels/${lightnovelId}`)
+  return response.data
 }
 
 export async function getLightnovelImage(lightnovelId: number) {
@@ -59,24 +66,25 @@ export async function getLightnovelImage(lightnovelId: number) {
 export async function uploadLightnovelImage(lightnovelId: number, imageFile: File) {
   const formData = new FormData()
   formData.append('image', imageFile)
-  return await api.post(`/lightnovels/${lightnovelId}/images`, formData, {
+  const response = await api.post(`/lightnovels/${lightnovelId}/images`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
+  return response.data
 }
 
 export const rules = {
   required: (msg = 'This field needs to be filled in') => {
-    return (value: string | number) => !!value || msg;
+    return (value: string | number) => !!value || msg
   },
   minValue: (min: number) => {
-    return (value: number) => value >= min || `Must be at least ${min}`;
+    return (value: number) => value >= min || `Must be at least ${min}`
   },
   lettersOnly: () => {
     return (value: string) =>
-      /^[a-zA-Z\s]+$/.test(value) || 'Only letters and spaces allowed';
+      /^[a-zA-Z\s]+$/.test(value) || 'Only letters and spaces allowed'
   },
   numberOnly: () => {
     return (value: string | number) =>
-      /^\d+(\.\d+)?$/.test(String(value)) || 'Only numbers allowed';
+      /^\d+(\.\d+)?$/.test(String(value)) || 'Only numbers allowed'
   }
-};
+}

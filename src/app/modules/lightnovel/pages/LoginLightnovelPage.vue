@@ -7,26 +7,28 @@
             Login
           </v-card-title>
 
-          <v-card-text>
-            <v-text-field
-              v-model="email"
-              label="Email"
-              type="email"
-              required
-            />
-            <v-text-field
-              v-model="password"
-              label="Password"
-              type="password"
-              required
-            />
-          </v-card-text>
+          <form @submit.prevent="handleLogin">
+            <v-card-text>
+              <v-text-field
+                v-model="email"
+                label="Email"
+                type="email"
+                required
+              />
+              <v-text-field
+                v-model="password"
+                label="Password"
+                type="password"
+                required
+              />
+            </v-card-text>
 
-          <v-card-actions class="justify-end">
-            <v-btn color="primary" :loading="loading" @click="handleLogin">
-              Login
-            </v-btn>
-          </v-card-actions>
+            <v-card-actions class="justify-end">
+              <v-btn color="primary" :loading="loading" type="submit">
+                Login
+              </v-btn>
+            </v-card-actions>
+          </form>
 
           <v-alert v-if="errorMessage" type="error" class="mt-4">
             {{ errorMessage }}

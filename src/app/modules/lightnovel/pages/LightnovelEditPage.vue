@@ -7,18 +7,27 @@
 
           <v-card-title class="text-h5">
             <v-spacer />
-            <v-btn color="secondary" :to="{ name: 'lightnovel-overview-page' }" variant="outlined">
+            <v-btn
+              color="secondary"
+              :to="{ name: 'lightnovel-overview-page' }"
+              variant="outlined"
+            >
               Back to Home
             </v-btn>
           </v-card-title>
 
-          <v-form ref="formRef" v-model="formValid" validate-on="input" @submit.prevent="submit">
+          <v-form
+            ref="formRef"
+            v-model="formValid"
+            validate-on="input"
+            @submit.prevent="submit"
+          >
             <v-text-field
               v-model="name"
               label="Name"
               :rules="[rules.required(), rules.lettersOnly()]"
               class="mt-4"
-            ></v-text-field>
+            />
 
             <v-text-field
               v-model="price"
@@ -26,23 +35,29 @@
               type="number"
               :rules="[rules.required(), rules.minValue(0), rules.numberOnly()]"
               class="mt-4"
-            ></v-text-field>
+            />
 
             <v-text-field
               v-model="description"
               label="Description"
               :rules="[rules.required(), rules.lettersOnly()]"
               class="mt-4"
-            ></v-text-field>
+            />
 
             <v-text-field
               v-model="genre"
               label="Genre"
               :rules="[rules.required(), rules.lettersOnly()]"
               class="mt-4"
-            ></v-text-field>
+            />
 
-            <v-btn color="primary" class="mt-6" @click="submit" :disabled="!formValid">
+            <v-btn
+              color="primary"
+              class="mt-6"
+              :loading="loading"
+              :disabled="!formValid"
+              type="submit"
+            >
               Update
             </v-btn>
 
@@ -61,32 +76,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { getLightnovel, editLightnovel, rules } from '@/app/modules/lightnovel/shared/Shared'
 
 const formRef = ref()
 const route = useRoute()
+const router = useRouter()
+
 const lightnovelId = Number(route.params.id)
-const loading = ref(false)
 
 const name = ref('')
 const price = ref(0)
 const description = ref('')
 const genre = ref('')
+const loading = ref(false)
 
+const formValid = ref(false)
 const successMessage = ref('')
 const errorMessage = ref('')
 
-const formValid = {
-  name: [rules.required(), rules.lettersOnly()],
-  price: [rules.required(), rules.minValue(0), rules.numberOnly()],
-  description: [rules.required(), rules.lettersOnly()],
-  genre: [rules.required(), rules.lettersOnly()]
-}
-
-LoadLightnovel()
-async function LoadLightnovel() {
+onMounted(async () => {
   loading.value = true
   try {
     const data = await getLightnovel(lightnovelId)
@@ -100,7 +110,7 @@ async function LoadLightnovel() {
   } finally {
     loading.value = false
   }
-}
+})
 
 async function submit() {
   const isValid = await formRef.value?.validate()
@@ -110,6 +120,7 @@ async function submit() {
   try {
     await editLightnovel(lightnovelId, name.value, price.value, description.value, genre.value)
     successMessage.value = 'Lightnovel updated successfully.'
+    setTimeout(() => router.push({ name: 'lightnovel-overview-page' }), 1500)
   } catch (error) {
     console.error('Update error:', error)
     errorMessage.value = 'Failed to update lightnovel.'

@@ -3,9 +3,14 @@
     <v-row justify="center">
       <v-col cols="12" md="8">
         <v-card elevation="6" class="pa-6">
-          <v-card-title class="text-h5">Create Lightnovels</v-card-title>
+          <v-card-title class="text-h5">Create Lightnovel</v-card-title>
 
-          <v-form ref="formRef" v-model="formValid" validate-on="input" @submit.prevent="submit">
+          <v-form
+            ref="formRef"
+            v-model="formValid"
+            validate-on="input"
+            @submit.prevent="submit"
+          >
             <v-text-field
               v-model="name"
               label="Name"
@@ -46,13 +51,21 @@
             </v-btn>
 
             <v-btn
-              color="primary"
+              color="secondary"
               class="mt-4"
               variant="outlined"
-              :to="{ name: 'lightnovel-edit-page', params: { id: 6 } }"
+              :to="{ name: 'lightnovel-overview-page' }"
             >
-              Update page
+              Back to Overview
             </v-btn>
+
+            <v-alert v-if="successMessage" type="success" class="mt-4" closable>
+              {{ successMessage }}
+            </v-alert>
+
+            <v-alert v-if="errorMessage" type="error" class="mt-4" closable>
+              {{ errorMessage }}
+            </v-alert>
           </v-form>
         </v-card>
       </v-col>
@@ -64,33 +77,39 @@
 import { ref } from 'vue'
 import { createLightnovel, rules } from '@/app/modules/lightnovel/shared/Shared'
 
-const formValid = {
-  name: [rules.required(), rules.lettersOnly()],
-  price: [rules.required(), rules.minValue(0)],
-  description: [rules.numberOnly()]
-}
+const formRef = ref()
+const formValid = ref(false)
 
 const name = ref('')
 const price = ref(0)
 const description = ref('')
 const genre = ref('')
-const formRef = ref()
 const loading = ref(false)
+
+const successMessage = ref('')
+const errorMessage = ref('')
 
 async function submit() {
   const isValid = await formRef.value?.validate()
   if (!isValid) return
 
   loading.value = true
+  successMessage.value = ''
+  errorMessage.value = ''
+
   try {
     await createLightnovel(name.value, price.value, description.value, genre.value)
+
+    successMessage.value = 'Lightnovel created successfully.'
 
     name.value = ''
     price.value = 0
     description.value = ''
     genre.value = ''
-  }
-  finally {
+  } catch (error) {
+    console.error('Create error:', error)
+    errorMessage.value = 'Failed to create lightnovel.'
+  } finally {
     loading.value = false
   }
 }
